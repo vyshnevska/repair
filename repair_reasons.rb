@@ -24,8 +24,4 @@ module RepairReasons
     end
     repaired_csv_data
   end
-
-  def repair_value(data, new_value = '8')
-    data.merge({'retoure_reason' => new_value})
-  end
 end

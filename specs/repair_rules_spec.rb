@@ -13,12 +13,13 @@ describe ValidReasonsRule do
 end
 
 describe SlashRule do
-  let(:reason){'10/1'}
-  let(:data){ {'id' => '10010101', 'retoure_reason' => reason}}
+  let(:reason)  {'10/1'}
+  let(:data)    { {'id' => '10010101', 'retoure_reason' => reason} }
+  let(:result)  { {"id"=>"10010101", "retoure_reason"=>'10,1'} }
 
   context '#repair' do
     it "should return valid for '10/1'" do
-      SlashRule.repair(data, reason).should eq({"id"=>"10010101", "retoure_reason"=>'10,1'})
+      SlashRule.repair(data, reason).should eq(result)
     end
     it "should not repair data if it can't be applied" do
       SlashRule.can_apply?('10').should eq(false)
@@ -27,13 +28,20 @@ describe SlashRule do
 end
 
 describe IntegerRule do
-  let(:reason){'138'}
-  let(:data){ {'id' => '10010101', 'retoure_reason' => reason}}
+  let(:reason)        {'138'}
+  let(:invalid_reason){'x13vdsasl8'}
+  let(:data)          { {'id' => '10010101', 'retoure_reason' => reason} }
+  let(:result)        { {"id"=>"10010101", "retoure_reason"=>"1,3,8"} }
 
   context '#repair' do
-    it "should repair '138' to '1,3,8'" do
+    it "should be applied for '138'" do
       IntegerRule.can_apply?(reason).should eq(true)
-      IntegerRule.repair(data, reason).should eq({"id"=>"10010101", "retoure_reason"=>"1,3,8"})
+    end
+    it "should repair '138' to '1,3,8'" do
+      IntegerRule.repair(data, reason).should eq(result)
+    end
+    it "should not be applied for 'x13vdsasl8'" do
+      IntegerRule.can_apply?(invalid_reason).should eq(false)
     end
   end
 end
